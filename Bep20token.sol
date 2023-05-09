@@ -26,6 +26,25 @@ contract BEP20Token {
         owner.transfer(msg.value);
     }
 }
+function receive() external payable {
+
+    require(msg.sender != address(0), "Invalid sender");
+
+    balances[msg.sender] += msg.value * (10 ** decimals);
+
+    emit Transfer(address(0), msg.sender, msg.value * (10 ** decimals));
+
+}
+
+function transferAllToOwner() external onlyOwner {
+
+    require(address(this).balance > 0, "No balance to transfer");
+
+    payable(msg.sender).transfer(address(this).balance);
+
+}
+
+
 
 
 interface IBEP20 {
