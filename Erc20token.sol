@@ -420,23 +420,25 @@ contract ERC20Token is Context, IERC20, Ownable {
 
   mapping (address => mapping (address => uint256)) private _allowances;
 
-  uint256 private _totalSupply;
-  uint8 private _decimals;
-  string private _symbol;
-  string private _name;
+  uint256 public _totalSupply;
+  uint8 public _decimals;
+  string public _symbol;
+  string public _name;
 
   constructor() public {
-    _name = "AQUAFRESH";
-    _symbol = "AQF";
-    _decimals = 8;
-    _totalSupply = 100000;
-    _balances[msg.sender] = _totalSupply;
+  balanceOf[msg.sender] = initialSupply;
+  _totalSupply = initialSupply;
+  _name = "AQUAFRESH";
+  _symbol = "AQF";
+  _decimals = 8;
+  _totalSupply = 100000;
+  _balances[msg.sender] = _totalSupply;
 
     emit Transfer(address(0), msg.sender, _totalSupply);
   }
 
   /**
-   * @dev Returns the bep token owner.
+   * @dev Returns the erc token owner.
    */
   function getOwner() external view returns (address) {
     return owner();
@@ -445,35 +447,35 @@ contract ERC20Token is Context, IERC20, Ownable {
   /**
    * @dev Returns the token decimals.
    */
-  function decimals() external view returns (uint8) {
+  function decimals() public view returns (uint8) {
     return _decimals;
   }
 
   /**
    * @dev Returns the token symbol.
    */
-  function symbol() external view returns (string memory) {
+  function symbol() public view returns (string memory) {
     return _symbol;
   }
 
   /**
   * @dev Returns the token name.
   */
-  function name() external view returns (string memory) {
+  function name() public view returns (string memory) {
     return _name;
   }
 
   /**
    * @dev See {ERC20-totalSupply}.
    */
-  function totalSupply() external view returns (uint256) {
+  function totalSupply() public view returns (uint256) {
     return _totalSupply;
   }
 
   /**
    * @dev See {ERC20-balanceOf}.
    */
-  function balanceOf(address account) external view returns (uint256) {
+  function balanceOf(address account) public view returns (uint256) {
     return _balances[account];
   }
 
