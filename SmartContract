@@ -210,15 +210,36 @@ contract Presale is ReentrancyGuard, Context, Ownable {
     
     
     //Pre-Sale 
-    function buyTokens(address beneficiary) public nonReentrant icoActive payable {
-        uint256 weiAmount = msg.value;
-        _preValidatePurchase(beneficiary, weiAmount);
-        uint256 tokens = _getTokenAmount(weiAmount);
-        _weiRaised = _weiRaised.add(weiAmount);
-        availableTokensICO = availableTokensICO - tokens;
-        _contributions[beneficiary] = _contributions[beneficiary].add(weiAmount);
-        emit TokensPurchased(_msgSender(), beneficiary, weiAmount, tokens);
-    }
+    
+    function buyTokens(address beneficiary) public payable nonReentrant icoActive {
+
+    require(beneficiary != address(0), "Crowdsale: beneficiary is the zero address");
+
+    require(msg.value != 0, "Crowdsale: weiAmount is 0");
+
+    require(msg.value >= minPurchase, 'We only accept purchase of minimum: minPurchase');
+
+    require(_weiRaised.add(msg.value) <= hardCap, 'Total hard cap has been reached');
+
+    require(token.balanceOf(address(this)) >= _getTokenAmount(msg.value), 'Sold out of tokens');
+
+    uint256 weiAmount = msg.value;
+
+    uint256 tokens = _getTokenAmount(weiAmount);
+
+    availableTokensICO -= tokens;
+
+    _weiRaised = _weiRaised.add(weiAmount);
+
+    _contributions[beneficiary] = _contributions[beneficiary].add(msg.value);
+
+    emit TokensPurchased(msg.sender, beneficiary, weiAmount, tokens);
+
+    // Token transfer to the beneficiary immediately after the purchase
+
+    require(token.transfer(beneficiary, tokens), "Token transfer failed");
+
+}
 
     function _preValidatePurchase(address beneficiary, uint256 weiAmount) internal view {
         require(beneficiary != address(0), "Crowdsale: beneficiary is the zero address");
